@@ -68,7 +68,7 @@ void new_dir(BuildBuilder* bb, unit* u) {
 }
 
 int main(void) {
-  BuildBuilder bb;
+  BuildBuilder bb = {0};
   unit* _main; unit* _lib; unit* _lib_h; unit* _outdir;
   const char* cflags = "-std=c89 -Wall -Wextra -Werror -pedantic";
 

@@ -25,7 +25,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
  * (C89 or C99 without extensions)
  *
  * This header should compile with any standard C89 compiler.
- * It has been tested with GCC and Clang. I could not get TCC to work.
+ * It has been tested with TCC, GCC, and Clang.
  */
 
 #include <stdbool.h>

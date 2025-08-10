@@ -41,6 +41,4 @@ Once you're ready in the script to build the project, just run `BB_build(&bb);`
 
 Then compile your script with any c compiler and run it
 
-*NOTE: TCC tends to segfault. I will try to fix this in the future if possible.*
-
 For a full example, check [this file](example/build.c) (also written in c89, which is why it's ugly)
