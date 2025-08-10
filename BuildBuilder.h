@@ -16,14 +16,15 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 */
 
 /*
- * This header provides a simple, single-header, customizable build system.
+ * This file provides a simple, single-header, customizable build system.
  * It is intended for C projects but may be used for anything.
  * Simply provide your own build.c file and write your build script using this
  * library, and then compile the build script and run it.
- * I reccomend you try to keep your build script as portable as possible.
+ * I reccomend you try to keep your build script as portable as possible
+ * to make there be as little compiler friction as possible.
  * (C89 or C99 without extensions)
  *
- * This header will compile with any standard C89 compiler.
+ * This header should compile with any standard C89 compiler.
  * It has been tested with GCC and Clang. I could not get TCC to work.
  */
 
