@@ -20,7 +20,7 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
  * It is intended for C projects but may be used for anything.
  * Simply provide your own build.c file and write your build script using this
  * library, and then compile the build script and run it.
- * I reccomend you try to keep your build script as portable as possible
+ * I recomend you try to keep your build script as portable as possible
  * to make there be as little compiler friction as possible.
  * (C89 or C99 without extensions)
  *
