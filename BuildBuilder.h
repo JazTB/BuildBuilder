@@ -32,12 +32,19 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 #include <stdlib.h>
 #include <stdio.h>
 
+#ifndef BB_NOT_STATIC
+#define __BB_STATIC static
+#endif
+
 struct unit;
 typedef struct {
   void* ptr;
 } BuildBuilder;
 typedef void (*step)(BuildBuilder*, struct unit*);
 
+#ifndef BB_MAX_DEPENDENCIES
+#define BB_MAX_DEPENDENCIES 256
+#endif
 typedef struct unit {
   const char* infile;
   const char* outfile;
@@ -46,36 +53,36 @@ typedef struct unit {
 
   bool built;
   
-  struct unit* dependencies[256];
+  struct unit* dependencies[BB_MAX_DEPENDENCIES];
   struct unit* next; /* linkedlist */
 } unit;
 
-void BB_build(BuildBuilder* bb);
-void BB_build_all_deps(BuildBuilder* bb, unit* u);
-void BB_build_unit(BuildBuilder* bb, unit* u);
+__BB_STATIC void BB_build(BuildBuilder* bb);
+__BB_STATIC void BB_build_all_deps(BuildBuilder* bb, unit* u);
+__BB_STATIC void BB_build_unit(BuildBuilder* bb, unit* u);
 
-unit* BB_add_file(
+__BB_STATIC unit* BB_add_file(
   BuildBuilder* bb,
   step step,
   const char* flags,
   const char* infile,
   const char* outfile
 );
-void BB_add_dependency(
+__BB_STATIC void BB_add_dependency(
   unit* dependant,
   unit* dependency
 );
 
-void BB_runcmd(const char* cmd);
+__BB_STATIC void BB_runcmd(const char* cmd);
 
 /* DEFINITIONS */
 
-void BB_build_unit(BuildBuilder* bb, unit* u) {
+__BB_STATIC void BB_build_unit(BuildBuilder* bb, unit* u) {
   if (!u->built) u->step(bb, u);
   u->built = true;
 }
 
-void BB_build_all_deps(BuildBuilder* bb, unit* u) {
+__BB_STATIC void BB_build_all_deps(BuildBuilder* bb, unit* u) {
   size_t i;
   for (i = 0; u->dependencies[i] != NULL; i++) {
     BB_build_all_deps(bb, u->dependencies[i]);
@@ -83,7 +90,7 @@ void BB_build_all_deps(BuildBuilder* bb, unit* u) {
   }
 }
 
-void BB_deinit(BuildBuilder* bb) {
+__BB_STATIC void BB_deinit(BuildBuilder* bb) {
   unit* ptr = ((unit*)bb->ptr)->next;
   unit* last_ptr = (unit*)bb->ptr;
 
@@ -94,7 +101,7 @@ void BB_deinit(BuildBuilder* bb) {
   }
 }
 
-void BB_build(BuildBuilder* bb) {
+__BB_STATIC void BB_build(BuildBuilder* bb) {
   unit* ptr = (unit*)bb->ptr;
 
   while (ptr != NULL) {
@@ -107,33 +114,39 @@ void BB_build(BuildBuilder* bb) {
   BB_deinit(bb);
 }
 
-unit* BB_add_file(
+__BB_STATIC unit* BB_add_file(
   BuildBuilder* bb,
   step step,
   const char* flags,
   const char* infile,
   const char* outfile
 ) {
-  unit* new = (unit*)malloc(sizeof(unit));
+  unit* newu = (unit*)malloc(sizeof(unit));
+  if (newu == NULL) {
+    fprintf(stderr, "[ERROR] Failed to allocate memory\n"); fflush(stderr);
+    exit(EXIT_FAILURE);
+  }
   unit* ptr = (unit*)bb->ptr;
-  new->step = step;
-  new->flags = flags;
-  new->infile = infile;
-  new->outfile = outfile;
-  new->dependencies[0] = NULL;
+  newu->next = NULL;
+  newu->built = false;
+  newu->step = step;
+  newu->flags = flags;
+  newu->infile = infile;
+  newu->outfile = outfile;
+  newu->dependencies[0] = NULL;
 
   if (bb->ptr == NULL) {
-    bb->ptr = (void*)new;
+    bb->ptr = (void*)newu;
     ptr = (unit*)bb->ptr;
   } else {
     while (ptr->next != NULL) ptr = ptr->next;
-    ptr->next = new;
+    ptr->next = newu;
   }
 
-  return new;
+  return newu;
 }
 
-void BB_add_dependency(
+__BB_STATIC void BB_add_dependency(
   unit* dependant,
   unit* dependency
 ) {
@@ -143,10 +156,14 @@ void BB_add_dependency(
   dependant->dependencies[i+1] = NULL;
 }
 
-void BB_runcmd(const char* cmd) {
+__BB_STATIC void BB_runcmd(const char* cmd) {
   /* Who cares about safety :D */
   fprintf(stderr, "[CMD] %s\n", cmd); fflush(stderr);
   system(cmd);
 }
+
+#undef BB_MAX_DEPENDENCIES
+#undef __BB_STATIC
+#undef BB_NOT_STATIC
 
 #endif
