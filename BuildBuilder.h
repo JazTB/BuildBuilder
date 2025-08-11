@@ -164,7 +164,6 @@ __BB_STATIC void BB_runcmd(const char* cmd) {
   system(cmd);
 }
 
-#undef BB_MAX_DEPENDENCIES
 #undef __BB_STATIC
 #undef BB_NOT_STATIC
 

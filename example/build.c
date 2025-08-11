@@ -1,9 +1,12 @@
+#define BB_MAX_DEPENDENCIES 64
 #include "../BuildBuilder.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
 
-void ccm_recurse(unit* u, size_t* len, const char* (*depnames)[256]) {
+#define CMDLEN 1024
+
+void ccm_recurse(unit* u, size_t* len, const char* (*depnames)[BB_MAX_DEPENDENCIES]) {
   size_t i;
   size_t j;
   size_t k;
@@ -24,8 +27,8 @@ void ccm_recurse(unit* u, size_t* len, const char* (*depnames)[256]) {
 
 void c_compile_main(BuildBuilder* bb, unit* u) {
   char* dependencies;
-  const char* depnames[256] = {0};
-  char cmd[1024] = {0};
+  const char* depnames[BB_MAX_DEPENDENCIES] = {0};
+  char cmd[CMDLEN] = {0};
   size_t i;
   size_t len = 0;
 
@@ -52,7 +55,7 @@ void c_compile_main(BuildBuilder* bb, unit* u) {
 }
 
 void c_compile_o(BuildBuilder* bb, unit* u) {
-  char cmd[1024];
+  char cmd[CMDLEN];
 
   sprintf(cmd, "clang %s -c %s -o %s", u->flags, u->infile, u->outfile);
   BB_runcmd(cmd);
@@ -61,7 +64,7 @@ void c_compile_o(BuildBuilder* bb, unit* u) {
 void c_header(BuildBuilder* bb, unit* u) {}
 
 void new_dir(BuildBuilder* bb, unit* u) {
-  char cmd[1024];
+  char cmd[CMDLEN];
 
   sprintf(cmd, "mkdir %s -p %s", u->flags, u->outfile);
   BB_runcmd(cmd);
