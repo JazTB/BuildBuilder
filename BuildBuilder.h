@@ -34,6 +34,8 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 
 #ifndef BB_NOT_STATIC
 #define __BB_STATIC static
+#else
+#define __BB_STATIC
 #endif
 
 struct unit;
