@@ -86,6 +86,7 @@ __BB_STATIC void BB_build_unit(BuildBuilder* bb, unit* u) {
 
 __BB_STATIC void BB_build_all_deps(BuildBuilder* bb, unit* u) {
   size_t i;
+
   for (i = 0; u->dependencies[i] != NULL; i++) {
     BB_build_all_deps(bb, u->dependencies[i]);
     BB_build_unit(bb, u->dependencies[i]);
@@ -124,11 +125,12 @@ __BB_STATIC unit* BB_add_file(
   const char* outfile
 ) {
   unit* newu = (unit*)malloc(sizeof(unit));
+  unit* ptr = (unit*)bb->ptr;
+
   if (newu == NULL) {
     fprintf(stderr, "[ERROR] Failed to allocate memory\n"); fflush(stderr);
     exit(EXIT_FAILURE);
   }
-  unit* ptr = (unit*)bb->ptr;
   newu->next = NULL;
   newu->built = false;
   newu->step = step;
@@ -153,15 +155,21 @@ __BB_STATIC void BB_add_dependency(
   unit* dependency
 ) {
   size_t i;
+
   for (i = 0; dependant->dependencies[i] != NULL; i++);
   dependant->dependencies[i] = dependency;
   dependant->dependencies[i+1] = NULL;
 }
 
 __BB_STATIC void BB_runcmd(const char* cmd) {
-  /* Who cares about safety :D */
+  int err;
+
   fprintf(stderr, "[CMD] %s\n", cmd); fflush(stderr);
-  system(cmd);
+  err = system(cmd);
+  if (err != 0) {
+    fprintf(stderr, "[ERROR] Command failed\n"); fflush(stderr);
+    exit(err);
+  }
 }
 
 #undef __BB_STATIC

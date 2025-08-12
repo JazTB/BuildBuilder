@@ -25,12 +25,14 @@ void ccm_recurse(unit* u, size_t* len, const char* (*depnames)[BB_MAX_DEPENDENCI
   }
 }
 
-void c_compile_main(BuildBuilder* bb, unit* u) {
+void c_compile_main(BuildBuilder* _bb, unit* u) {
   char* dependencies;
   const char* depnames[BB_MAX_DEPENDENCIES] = {0};
   char cmd[CMDLEN] = {0};
   size_t i;
   size_t len = 0;
+  
+  (void)_bb; /* discard */
 
   ccm_recurse(u, &len, &depnames);
 
@@ -54,17 +56,24 @@ void c_compile_main(BuildBuilder* bb, unit* u) {
   BB_runcmd(cmd);
 }
 
-void c_compile_o(BuildBuilder* bb, unit* u) {
+void c_compile_o(BuildBuilder* _bb, unit* u) {
   char cmd[CMDLEN];
+
+  (void)_bb; /* discard */
 
   sprintf(cmd, "clang %s -c %s -o %s", u->flags, u->infile, u->outfile);
   BB_runcmd(cmd);
 }
 
-void c_header(BuildBuilder* bb, unit* u) {}
+void c_header(BuildBuilder* _bb, unit* _u) {
+  (void)_bb; /* discard */
+  (void)_u; /* discard */
+}
 
-void new_dir(BuildBuilder* bb, unit* u) {
+void new_dir(BuildBuilder* _bb, unit* u) {
   char cmd[CMDLEN];
+
+  (void)_bb; /* discard */
 
   sprintf(cmd, "mkdir %s -p %s", u->flags, u->outfile);
   BB_runcmd(cmd);
