@@ -53,7 +53,7 @@ typedef struct unit {
   const char* flags;
   step step;
 
-  bool built;
+  int /*bool*/ built;
   
   struct unit* dependencies[BB_MAX_DEPENDENCIES];
   struct unit* next; /* linkedlist */
