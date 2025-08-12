@@ -59,26 +59,6 @@ typedef struct unit {
   struct unit* next; /* linkedlist */
 } unit;
 
-__BB_STATIC void BB_build(BuildBuilder* bb);
-__BB_STATIC void BB_build_all_deps(BuildBuilder* bb, unit* u);
-__BB_STATIC void BB_build_unit(BuildBuilder* bb, unit* u);
-
-__BB_STATIC unit* BB_add_file(
-  BuildBuilder* bb,
-  step step,
-  const char* flags,
-  const char* infile,
-  const char* outfile
-);
-__BB_STATIC void BB_add_dependency(
-  unit* dependant,
-  unit* dependency
-);
-
-__BB_STATIC void BB_runcmd(const char* cmd);
-
-/* DEFINITIONS */
-
 __BB_STATIC void BB_build_unit(BuildBuilder* bb, unit* u) {
   if (!u->built) u->step(bb, u);
   u->built = true;
