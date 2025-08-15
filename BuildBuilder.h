@@ -165,6 +165,12 @@ __BB_STATIC void BB_runcmd(const char* cmd) {
 #ifndef BUILD_EXE_NAME
 #define BUILD_EXE_NAME "./BuildBuilder"
 #endif
+#ifndef BUILD_C_FLAGS
+#define BUILD_C_FLAGS ""
+#endif
+#ifndef BUILD_CC
+#define BUILD_CC "cc"
+#endif
 
 __BB_STATIC void __BB_rebuild(void) {
   char cmd[CMD_SIZE] = {0};
@@ -176,7 +182,7 @@ __BB_STATIC void __BB_rebuild(void) {
   fprintf(stderr, "[BB_DEBUG] Rebuilding self\n");
   fflush(stderr);
   #endif
-  sprintf(cccmd, "cc -o %s %s -std=c89 -Wall -Wextra -Werror -pedantic", BUILD_EXE_NAME, BUILD_C_NAME);
+  sprintf(cccmd, "%s -o %s %s %s", BUILD_CC, BUILD_EXE_NAME, BUILD_C_NAME, BUILD_C_FLAGS);
   e = system(cccmd);
   if (e) {
     fputs("Failed to compile\n", stderr);
@@ -236,7 +242,8 @@ __BB_STATIC void BB_rebuild(void) {
   }
 }
 
-
+#undef ARGS_SIZE
+#undef CMD_SIZE
 #undef __BB_STATIC
 #undef BB_NOT_STATIC
 
