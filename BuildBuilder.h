@@ -31,6 +31,9 @@ THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS “AS IS” 
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include <string.h>
 
 #ifndef BB_NOT_STATIC
 #define __BB_STATIC static
@@ -151,6 +154,85 @@ __BB_STATIC void BB_runcmd(const char* cmd) {
     exit(err);
   }
 }
+
+/* self-rebuilding */
+
+#define ARGS_SIZE 64
+#define CMD_SIZE 1024
+
+#define BUILD_C_NAME "./BuildBuilder.c"
+#define BUILD_EXE_NAME "./BuildBuilder"
+
+__BB_STATIC void __BB_rebuild(void) {
+  char cmd[CMD_SIZE] = {0};
+  char cccmd[CMD_SIZE] = {0};
+  char* args[ARGS_SIZE] = {NULL};
+  int e;
+
+  #ifdef BB_DEBUG
+  fprintf(stderr, "[BB_DEBUG] Rebuilding self\n");
+  fflush(stderr);
+  #endif
+  sprintf(cccmd, "cc -o %s %s -std=c89 -Wall -Wextra -Werror -pedantic", BUILD_EXE_NAME, BUILD_C_NAME);
+  e = system(cccmd);
+  if (e) {
+    fputs("Failed to compile\n", stderr);
+    fflush(stderr);
+    exit(1);
+  }
+
+  #ifdef BB_DEBUG
+  fprintf(stderr, "[BB_DEBUG] Calling new version of self\n");
+  fflush(stderr);
+  #endif
+
+  fflush(stdout);
+
+  strcpy(cmd, BUILD_EXE_NAME);
+  args[0] = cmd;
+  args[1] = NULL;
+  execvp(cmd, args);
+
+  perror("[ERROR] execvp() failed");
+  exit(1);
+}
+
+__BB_STATIC void BB_rebuild(void) {
+  struct stat s;
+  struct stat s_c;
+  long time = 0;
+  long time_c;
+  int should_rebuild = false;
+  FILE* f;
+
+  f = fopen(BUILD_C_NAME, "r");
+  if (f == NULL) {
+  #ifdef BB_DEBUG
+  fprintf(stderr, "[BB_DEBUG] Build script named `%s` isn't found, skipping rebuild.\n", BUILD_C_NAME);
+  fflush(stderr);
+  #endif
+    return;
+  }
+  fclose(f);
+
+  if (stat(BUILD_C_NAME,&s_c) != 0) {
+    perror("[ERROR] Failed to stat build source file");
+    exit(EXIT_FAILURE);
+  }
+  time_c = s_c.st_mtime;
+  if (stat(BUILD_EXE_NAME, &s) != 0) {
+    should_rebuild = true;
+  } else {
+    time = s.st_mtime;
+  }
+
+  if (time_c > time) should_rebuild = true;
+
+  if (should_rebuild) {
+    __BB_rebuild();
+  }
+}
+
 
 #undef __BB_STATIC
 #undef BB_NOT_STATIC

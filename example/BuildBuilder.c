@@ -1,4 +1,5 @@
 #define BB_MAX_DEPENDENCIES 64
+#define BB_DEBUG
 #include "../BuildBuilder.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -83,6 +84,8 @@ int main(void) {
   BuildBuilder bb = {0};
   unit* _main; unit* _lib; unit* _lib_h; unit* _outdir;
   const char* cflags = "-std=c89 -Wall -Wextra -Werror -pedantic";
+
+  BB_rebuild();
 
   _main = BB_add_file(&bb, c_compile_main, cflags, "./src/main.c", "./out/main");
   _lib = BB_add_file(&bb, c_compile_o, cflags, "./src/lib.c", "./out/lib.o");
