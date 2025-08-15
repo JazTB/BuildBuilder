@@ -41,11 +41,10 @@ Once you're ready in the script to build the project, just run `BB_build(&bb);`
 
 Then compile your script with any c compiler and run it.
 
-
 The script can rebuild itself by calling `BB_rebuild()` at the start of main.
 This will try to compile the source file `BUILD_C_NAME` to `BUILD_EXE_NAME`.
 By default these are `./BuildBuilder.c` and `./BuildBuilder`, but you can change these with a `#define` before including `BuildBuilder.h`. 
 
 *Note: the filename for the executable must be prefixed with `./` or similar or else it won't be able to execute*
 
-For a full example, check [this file](example/build.c) (also written in c89, which is why it's ugly)
+For a full example, check [this file](example/BuildBuilder.c)
