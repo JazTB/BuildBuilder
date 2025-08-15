@@ -172,11 +172,20 @@ __BB_STATIC void BB_runcmd(const char* cmd) {
 #define BUILD_CC "cc"
 #endif
 
-__BB_STATIC void __BB_rebuild(void) {
+__BB_STATIC void __BB_rebuild(int argc, char** argv) {
   char cmd[CMD_SIZE] = {0};
   char cccmd[CMD_SIZE] = {0};
-  char* args[ARGS_SIZE] = {NULL};
   int e;
+  int i;
+  char** args = (char**)malloc(sizeof(char*) * argc+1);
+  if (args == NULL) {
+    fprintf(stderr, "Failed to allocate args for rebuild, exiting\n");
+    exit(1);
+  }
+  for (i = 0; i < argc; i++) {
+    args[i] = argv[i];
+  }
+  args[argc] = NULL;
 
   #ifdef BB_DEBUG
   fprintf(stderr, "[BB_DEBUG] Rebuilding self\n");
@@ -199,14 +208,13 @@ __BB_STATIC void __BB_rebuild(void) {
 
   strcpy(cmd, BUILD_EXE_NAME);
   args[0] = cmd;
-  args[1] = NULL;
   execvp(cmd, args);
 
   perror("[ERROR] execvp() failed");
   exit(1);
 }
 
-__BB_STATIC void BB_rebuild(void) {
+__BB_STATIC void BB_rebuild(int argc, char** argv) {
   struct stat s;
   struct stat s_c;
   long time = 0;
@@ -238,7 +246,7 @@ __BB_STATIC void BB_rebuild(void) {
   if (time_c > time) should_rebuild = true;
 
   if (should_rebuild) {
-    __BB_rebuild();
+    __BB_rebuild(argc, argv);
   }
 }
 
