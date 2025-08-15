@@ -95,7 +95,6 @@ __BB_STATIC void BB_build(BuildBuilder* bb) {
     BB_build_unit(bb, ptr);
     ptr = ptr->next;
   }
-  /* TODO: cleanup */
 
   BB_deinit(bb);
 }
