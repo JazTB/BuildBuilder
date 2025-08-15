@@ -80,12 +80,12 @@ void new_dir(BuildBuilder* _bb, unit* u) {
   BB_runcmd(cmd);
 }
 
-int main(void) {
+int main(int argc, char** argv) {
   BuildBuilder bb = {0};
   unit* _main; unit* _lib; unit* _lib_h; unit* _outdir;
   const char* cflags = "-std=c89 -Wall -Wextra -Werror -pedantic";
 
-  BB_rebuild();
+  BB_rebuild(argc, argv);
 
   _main = BB_add_file(&bb, c_compile_main, cflags, "./src/main.c", "./out/main");
   _lib = BB_add_file(&bb, c_compile_o, cflags, "./src/lib.c", "./out/lib.o");
