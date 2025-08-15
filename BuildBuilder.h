@@ -160,8 +160,12 @@ __BB_STATIC void BB_runcmd(const char* cmd) {
 #define ARGS_SIZE 64
 #define CMD_SIZE 1024
 
+#ifndef BUILD_C_NAME
 #define BUILD_C_NAME "./BuildBuilder.c"
+#endif
+#ifndef BUILD_EXE_NAME
 #define BUILD_EXE_NAME "./BuildBuilder"
+#endif
 
 __BB_STATIC void __BB_rebuild(void) {
   char cmd[CMD_SIZE] = {0};
